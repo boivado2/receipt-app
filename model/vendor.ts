@@ -1,4 +1,4 @@
-import mongoose, { HydratedDocument, Model, Schema } from 'mongoose'
+import mongoose, {  Schema } from 'mongoose'
 import { IVendor } from '../interfaces/index'
 import Joi from 'joi'
 
@@ -17,7 +17,7 @@ const vendorSchema = new Schema<IVendor>({
 }, { timestamps: true, })
 
 
-const Vendor = mongoose.model<IVendor>("Vendors", vendorSchema)
+const Vendor = mongoose.model<IVendor>("Vendor", vendorSchema)
 
 
 

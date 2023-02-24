@@ -17,7 +17,7 @@ interface ICustomer {
   phone: string
 }
 
-interface IProduct {
+export interface IProduct {
 
   productName: string
   description: string
@@ -25,7 +25,7 @@ interface IProduct {
   dateAdded: Date
   dateUpdated: Date
   Images: string[]
-  categories: string[]
+  categories: Types.Array<string>
   VendorId: Types.ObjectId
 }
 
