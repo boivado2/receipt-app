@@ -1,13 +1,15 @@
-interface IVendor {
+import { Types } from "mongoose"
+
+export interface IVendor  {
 
   businessName:		string
-  name: string
-  accountCreationDate: Date
+  OwnerName: string
   companyType: string
   Address: string
   email: string
   phone: string
   logo: string
+  password: string
 }
 
 interface ICustomer {
@@ -18,13 +20,13 @@ interface ICustomer {
 interface IProduct {
 
   productName: string
-  // productId: string
   description: string
   price: number
   dateAdded: Date
   dateUpdated: Date
   Images: string[]
   categories: string[]
+  VendorId: Types.ObjectId
 }
 
 interface Invoice {
@@ -49,4 +51,3 @@ interface Invoice {
   totalPrice: number
   totalQuantity: number
 }
-
