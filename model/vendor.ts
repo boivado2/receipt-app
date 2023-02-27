@@ -1,11 +1,16 @@
-import mongoose, {  Schema } from 'mongoose'
+import mongoose, {  Model, Schema } from 'mongoose'
 import { IVendor } from '../interfaces/index'
 import Joi from 'joi'
+import bcrypt from 'bcrypt'
 
 
+interface IVendorMethods {
+  hashPassword(data: string) : Promise<string>
+}
 
+type VendorModel = Model<IVendor, {}, IVendorMethods>
 
-const vendorSchema = new Schema<IVendor>({
+const vendorSchema = new Schema<IVendor, VendorModel, IVendorMethods>({
   businessName: { type: String,  max: 225, required: true },
   companyType: { type: String, min: 4, max: 225, required: true },
   Address: { type: String, min: 4, max: 225, required: true },
@@ -17,7 +22,13 @@ const vendorSchema = new Schema<IVendor>({
 }, { timestamps: true, })
 
 
-const Vendor = mongoose.model<IVendor>("Vendor", vendorSchema)
+vendorSchema.methods.hashPassword = async(data) => {
+  const salt = await bcrypt.genSalt(10)
+  return await bcrypt.hash(data, salt)
+}
+
+
+const Vendor = mongoose.model<IVendor, VendorModel>("Vendor", vendorSchema)
 
 
 
@@ -39,7 +50,7 @@ const validateVendor = (data: IVendor) => {
 }
 
 
-export default {
+export {
   Vendor,
   validateVendor
 }
