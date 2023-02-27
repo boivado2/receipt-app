@@ -1,4 +1,4 @@
-import { Types } from "mongoose"
+import { Document, Types } from "mongoose"
 
 export interface IVendor  {
 
@@ -22,11 +22,9 @@ export interface IProduct {
   productName: string
   description: string
   price: number
-  dateAdded: Date
-  dateUpdated: Date
-  Images: string[]
+  images: string[]
   categories: Types.Array<string>
-  VendorId: Types.ObjectId
+  vendorId: Types.ObjectId
 }
 
 interface Invoice {
