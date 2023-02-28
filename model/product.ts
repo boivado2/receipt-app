@@ -9,9 +9,10 @@ const productSchema = new Schema<IProduct>({
   productName: { type: String, max: 225, required: true },
   description: { type: String, min: 4, max: 225, required: true },
   price: { type: Number, minlength: 0, required: true },
-  images: [{ type: String }],
+  imageUrl: { type: String },
   categories: [{ type: String, min: 3, max: 225, required: true }],
-  vendorId: {type: mongoose.Schema.Types.ObjectId, ref: "Vendor"}
+  vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor" },
+  imageName: { type: String, required:true, unique: true },
 
 }, { timestamps: true, })
 
@@ -28,7 +29,8 @@ const validateProduct = (data: IProduct) => {
     productName: Joi.string().max(50).required(),  
     description: Joi.string().max(225).required(),
     categories : Joi.array().items(Joi.string().min(3).max(225)).required(),
-    images : Joi.array().items(Joi.string()),
+    imageUrl: Joi.string(),
+    imageName: Joi.string().required(),
     price : Joi.number().min(0).required(),
     vendorId : Joi.string().required(),
   })

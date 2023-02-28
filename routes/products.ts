@@ -1,10 +1,14 @@
 import express from 'express'
 import productsController from  "../controller/products"
-
+import multer from 'multer'
 const router = express.Router()
 
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+
+
 // POST: add product
-router.post('/', productsController.addProduct)
+router.post('/', upload.single('imageUrl'), productsController.addProduct)
 
 // Get: all products for a vendor
 /* params 

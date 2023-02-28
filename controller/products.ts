@@ -1,27 +1,46 @@
 import { Request, Response } from "express"
 import { IProduct } from "../interfaces"
 import {Product, validateProduct} from '../model/product'
+import generateImageName from "../util/generateImageName"
+import { postImageToS3 } from "../util/s3"
+
+
+  const awsCloudFrontUrl = process.env.AWS_CLOUDFRONT_URL!
 
 
 const addProduct = async(req: Request, res: Response) => { 
 
+  const imageName = generateImageName()
+
   const body = req.body as IProduct
-
-  const { error } = validateProduct(body)
-  if (error) return res.status(400).json({ error: error.message })
   
+  try {
+    
+    const { error } = validateProduct({...body, imageName})
+    
+    if (error) return res.status(400).json({ error: error.message })
+    
 
-  const product = new Product<IProduct>({
-    productName: body.productName,
-    description: body.description,
-    price: body.price,
-    vendorId: body.vendorId,
-    images: body.images,
-    categories: body.categories,
-  })
+   await postImageToS3(req.file, imageName)
+    
+    const product = new Product<IProduct>({
+      productName: body.productName,
+      description: body.description,
+      price: body.price,
+      vendorId: body.vendorId,
+      imageName: imageName,
+      categories: body.categories,
+    })
+    
 
-  await product.save()
-  res.status(201).send(product)
+    await product.save()
+    
+    res.status(201).send(product)
+    
+  } catch (error) {
+    console.log('error', error)
+    
+  }
 
 }
 
@@ -29,7 +48,12 @@ const addProduct = async(req: Request, res: Response) => {
 const getVendorProducts =async (req :Request, res: Response) => {}
 
 const getProducts = async (req: Request, res: Response) => {
+  
   const products: IProduct[] = await Product.find()
+
+  products.forEach((product) => {
+    product.imageUrl = awsCloudFrontUrl + product.imageName
+  })
 
   res.status(200).send(products)
 }
@@ -40,6 +64,9 @@ const getProduct = async (req: Request, res: Response) => {
   const product = await Product.findById(req.params.productId)
   if (!product) return res.status(404).json({ msg: "Product not found" })
   
+  product.imageUrl = awsCloudFrontUrl + product.imageName
+  
+
 
   res.status(200).send(product)
   
