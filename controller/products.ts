@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { IProduct } from "../interfaces"
 import {Product, validateProduct} from '../model/product'
 import generateImageName from "../util/generateImageName"
-import { postImageToS3 } from "../util/s3"
+import { postImageToS3, deleteImageFromS3 } from "../util/s3"
 
 
   const awsCloudFrontUrl = process.env.AWS_CLOUDFRONT_URL!
@@ -13,9 +13,7 @@ const addProduct = async(req: Request, res: Response) => {
   const imageName = generateImageName()
 
   const body = req.body as IProduct
-  
-  try {
-    
+      
     const { error } = validateProduct({...body, imageName})
     
     if (error) return res.status(400).json({ error: error.message })
@@ -36,16 +34,22 @@ const addProduct = async(req: Request, res: Response) => {
     await product.save()
     
     res.status(201).send(product)
-    
-  } catch (error) {
-    console.log('error', error)
-    
-  }
+
 
 }
 
 
-const getVendorProducts =async (req :Request, res: Response) => {}
+const getVendorProducts = async (req: Request, res: Response) => { 
+
+  const products: IProduct[] = await Product.find({ vendorId: req.user._id })
+  
+  products.forEach((product) => {
+    product.imageUrl = awsCloudFrontUrl + product.imageName
+  })
+
+  res.status(200).send(products)
+}
+
 
 const getProducts = async (req: Request, res: Response) => {
   
@@ -59,9 +63,11 @@ const getProducts = async (req: Request, res: Response) => {
 }
 
 
+
 const getProduct = async (req: Request, res: Response) => {
+  const {id: productId} = req.params
   
-  const product = await Product.findById(req.params.productId)
+  const product = await Product.findById(productId)
   if (!product) return res.status(404).json({ msg: "Product not found" })
   
   product.imageUrl = awsCloudFrontUrl + product.imageName
@@ -75,10 +81,11 @@ const getProduct = async (req: Request, res: Response) => {
 const updateProduct = async (req: Request, res: Response) => {
 
   const body = req.body as IProduct
+  const {id: productId} = req.params
   
   // check to see if vendor as permission to update product
 
-  const product = await Product.findByIdAndUpdate(req.params.productId, { $set: body }, { new: true })
+  const product = await Product.findByIdAndUpdate(productId, { $set: body }, { new: true })
 
   if (!product) return res.status(404).json({ msg: "Product not found" })
 
@@ -89,17 +96,18 @@ const updateProduct = async (req: Request, res: Response) => {
 
 
 const deleteProduct = async (req: Request, res: Response) => {
-  const {vendorId, productId} = req.params
+  const {id: productId} = req.params
 
 // check to see if product id exits
-  const product = await Product.findById(productId)
+  let product = await Product.findById(productId)
   if (!product) return res.status(404).json({ msg: "Product not found" })
   
-// check to see if vendor as permissions to delete products
+  // delete product if vendor have access
+  product = await Product.findOneAndDelete({ vendorId: req.user._id })
+  if (!product) return res.status(401).json({ msg: "Access denied" })
 
+  await deleteImageFromS3(product.imageName)
   
-// delete the product if all checks out
-  // await Product.findByIdAndDelete(productId)
   res.status(200).json({msg: "Product deleted successfully."})
 }
 

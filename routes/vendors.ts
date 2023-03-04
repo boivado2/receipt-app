@@ -1,11 +1,14 @@
 import express from 'express'
 import vendorController from '../controller/vendors'
-
+import multer from 'multer'
 const router = express.Router()
 
-router.post('/', vendorController.addVendor)
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 
-router.put('/:vendorId', vendorController.updateVendor)
+router.post('/', upload.single('logoImage'), vendorController.addVendor)
+
+router.put('/:id', upload.single('logoImage'), vendorController.updateVendor)
 
 
 router.get('/', vendorController.getVendor)

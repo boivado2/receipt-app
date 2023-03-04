@@ -3,12 +3,13 @@ import { Document, Types } from "mongoose"
 export interface IVendor  {
 
   businessName:		string
-  OwnerName: string
+  ownerName: string
   companyType: string
-  Address: string
+  address: string
   email: string
   phone: string
-  logo: string
+  logoName: string
+  logoUrl: string
   password: string
 }
 

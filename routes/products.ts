@@ -1,20 +1,21 @@
 import express from 'express'
 import productsController from  "../controller/products"
 import multer from 'multer'
+import auth from '../middleware/auth'
+import validateObjectId from '../middleware/validateObjectId'
 const router = express.Router()
 
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-
 // POST: add product
-router.post('/', upload.single('imageUrl'), productsController.addProduct)
+router.post('/', [auth, upload.single('imageUrl')], productsController.addProduct)
 
 // Get: all products for a vendor
 /* params 
   - vendorId
 */
-// router.get('/:vendorId', productsController.getVendorProducts)
+router.get('/', [auth], productsController.getVendorProducts)
 
 // Get: all products
 router.get('/', productsController.getProducts)
@@ -22,22 +23,21 @@ router.get('/', productsController.getProducts)
 
 // Get: single product
 /* params 
-  - productID
+  - id
 */
-router.get('/:productId', productsController.getProduct)
+router.get('/:id', [validateObjectId], productsController.getProduct)
 
 //PUT: update product
 /* params 
-  - productID
+  - id
 */
-router.put("/:productId", productsController.updateProduct)
+router.put("/:id", [auth, validateObjectId], productsController.updateProduct)
 
 // DELETE: delete product
 /* params 
-  - vendorId
-  - productID
+  - id
 */
-router.delete("/:vendorId/:productId", productsController.deleteProduct)
+router.delete("/:id", [auth, validateObjectId], productsController.deleteProduct)
 
 
 export default router

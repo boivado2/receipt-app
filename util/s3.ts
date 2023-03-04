@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import dotenv from 'dotenv'
 
@@ -9,7 +9,6 @@ const secretAccessKey = process.env.AWS_SECRETE_KEY!
 const region = process.env.AWS_REGION
 const Bucket = process.env.AWS_BUCKET_NAME!
 
-console.log(Bucket, region)
 
 const s3 = new S3Client({
   region: region,
@@ -28,7 +27,7 @@ type PutCommand = {
 export const postImageToS3 = async (data: any, imageName: string) => {
   try {
   
-  const buffer = await sharp(data.buffer).resize(125, 125, {fit: 'cover'}).toBuffer()
+  const buffer = await sharp(data.buffer).resize(1280, 854, {fit: 'cover'}).toBuffer()
 
   const putCommand : PutCommand = {
     Bucket,
@@ -48,26 +47,26 @@ export const postImageToS3 = async (data: any, imageName: string) => {
 }
 
 
-type GetCommand = {
-  Bucket: string,
-  Key: string
-}
+// type GetCommand = {
+//   Bucket: string,
+//   Key: string
+// }
 
-export const getJobLogo = async (data: any) => {
- try {
-  const getCommand : GetCommand = {
-    Bucket,
-    Key: data.logo
-  }
+// export const getImageFromS3 = async (data: any) => {
+//  try {
+//   const getCommand : GetCommand = {
+//     Bucket,
+//     Key: data.logo
+//   }
 
-  const command = new GetObjectCommand(getCommand)
+//   const command = new GetObjectCommand(getCommand)
 
 //  data.logoUrl =  await getSignedUrl(s3, command, {expiresIn: 3600})
- } catch (error) {
-   console.log(error)
- }
+//  } catch (error) {
+//    console.log(error)
+//  }
   
-}
+// }
 
 
 
@@ -76,7 +75,7 @@ type DeleteParams = {
   Key: string
 }
 
-export const deleteLogo = async (key: string) => {
+export const deleteImageFromS3 = async (key: string) => {
   
   const deleteParams: DeleteParams = {
     Bucket,
