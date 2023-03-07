@@ -1,12 +1,15 @@
 import mongoose from 'mongoose'
+import winston from './logger';
 
 export default async function (uri: string) {
  
   try {
+    await mongoose.set('strictQuery', true)
     await mongoose.connect(uri)
-    console.log("db connected successfully")
+    winston.info("db connected successfully")
   } catch (error) {
-    console.log("db connection failed" + error) 
+    winston.error(error) 
+    process.exit(1)
   }
 
 }

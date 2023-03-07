@@ -2,10 +2,13 @@ import mongoose, {  Model, Schema } from 'mongoose'
 import { IVendor } from '../interfaces/index'
 import Joi from 'joi'
 import bcrypt from 'bcrypt'
+import jsonwebtoken  from 'jsonwebtoken'
+
 
 
 interface IVendorMethods {
-  hashPassword(data: string) : Promise<string>
+  hashPassword(data: string): Promise<string>
+  generateToken (data: IVendor) : string
 }
 
 type VendorModel = Model<IVendor, {}, IVendorMethods>
@@ -28,6 +31,9 @@ vendorSchema.methods.hashPassword = async(data) => {
   return await bcrypt.hash(data, salt)
 }
 
+vendorSchema.methods.generateToken = (payload) => {
+  return jsonwebtoken.sign({ email: payload.email, _id: payload._id }, process.env.jsonWebToken!)
+}
 
 const Vendor = mongoose.model<IVendor, VendorModel>("Vendor", vendorSchema)
 
@@ -45,7 +51,7 @@ const validateVendor = (data: IVendor) => {
     logoName: Joi.string().required(),
     logoUrl : Joi.string(),
     phone: Joi.string().required(),
-    password: Joi.string().min(4).required()
+    password: Joi.string().min(4).optional().required()
   })
 
   return schema.validate(data, {abortEarly: true})

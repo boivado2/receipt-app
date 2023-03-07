@@ -18,7 +18,7 @@ router.post('/', [auth, upload.single('imageUrl')], productsController.addProduc
 router.get('/', [auth], productsController.getVendorProducts)
 
 // Get: all products
-router.get('/', productsController.getProducts)
+// router.get('/', productsController.getProducts)
 
 
 // Get: single product

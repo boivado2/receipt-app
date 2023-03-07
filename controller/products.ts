@@ -51,16 +51,16 @@ const getVendorProducts = async (req: Request, res: Response) => {
 }
 
 
-const getProducts = async (req: Request, res: Response) => {
+// const getProducts = async (req: Request, res: Response) => {
   
-  const products: IProduct[] = await Product.find()
+//   const products: IProduct[] = await Product.find()
 
-  products.forEach((product) => {
-    product.imageUrl = awsCloudFrontUrl + product.imageName
-  })
+//   products.forEach((product) => {
+//     product.imageUrl = awsCloudFrontUrl + product.imageName
+//   })
 
-  res.status(200).send(products)
-}
+//   res.status(200).send(products)
+// }
 
 
 
@@ -119,7 +119,7 @@ const deleteProduct = async (req: Request, res: Response) => {
 export default {
   addProduct,
   getVendorProducts,
-  getProducts,
+  // getProducts,
   getProduct,
   updateProduct,
   deleteProduct

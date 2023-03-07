@@ -1,11 +1,12 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import logger from "../starter/logger";
 
 
 
 const errorHandler: ErrorRequestHandler =  (error: any, req :Request, res: Response, next: NextFunction) => {
   // winston.error(err.message, err);
 
-  console.log(error)
+  logger.error(error)
   // error
   // warn
   // info

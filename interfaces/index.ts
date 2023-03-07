@@ -1,7 +1,7 @@
 import { Document, Types } from "mongoose"
 
 export interface IVendor  {
-
+  _id?: Types.ObjectId
   businessName:		string
   ownerName: string
   companyType: string
@@ -13,9 +13,15 @@ export interface IVendor  {
   password: string
 }
 
+type Address = {
+  street: string
+  city: string
+  state: string
+}
 interface ICustomer {
   name: string
   phone: string
+  address: Address
 }
 
 export interface IProduct {

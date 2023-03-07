@@ -1,4 +1,5 @@
 import { Request, Response } from "express"
+import _ from 'lodash'
 import { IVendor } from "../interfaces"
 import {validateVendor,Vendor} from "../model/vendor"
 import generateImageName from "../util/generateImageName"
@@ -25,34 +26,45 @@ const addVendor = async (req: Request, res: Response) => {
 
   await postImageToS3(req.file, logoName)
   
+  
 
-  res.status(201).send(vendor)
+  res.status(201).send( _.pick(body, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email']))
   
 }
 
 
 const updateVendor = async (req: Request, res: Response) => {
 
-  const {id: vendorId} = req.params
-  const body = req.body as IVendor
+  // const {id: vendorId} = req.params
+  // const body = req.body as IVendor
+  //   const logoName = generateImageName()
 
-  const { error } = validateVendor(body)
-  if (error) return res.status(400).json({ error: error.message })
+  //   console.log(req.file)
 
 
-  const vendor = await Vendor.findByIdAndUpdate(vendorId, { $set: body }, { new: true })
-  if(!vendor) return res.status(404).json({error: "The vendor withe given id not found."})
+  // const { error } = validateVendor({...body, logoName})
+  // if (error && !error?.details[0].path[0]) return res.status(400).json({ error: error.message })
 
-  deleteImageFromS3(vendor.logoName)
-  await vendor.save()
+  // let vendor = await Vendor.findOne({ email: body.email })
+  // if(vendor) return res.status(400).json({error: "Vendor with this email already exist"})
 
-  postImageToS3(req.file, vendor.logoName)
+  // const updatedVendor = _.pick(body, ['businessName', 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email'])
 
-  res.status(201).send(vendor)
+
+  // vendor = await Vendor.findByIdAndUpdate(vendorId, { $set:updatedVendor }, { new: true })
+  // if(!vendor) return res.status(404).json({error: "The vendor withe given id not found."})
+
+  // deleteImageFromS3(vendor.logoName)
+
+  // postImageToS3(req.file, vendor.logoName)
+
+  res.status(201).send('updated')
 }
 
-const getVendor = (req: Request, res: Response) => { 
-  res.send("Vendors page")
+const getVendor =async (req: Request, res: Response) => { 
+  const vendor = await Vendor.findById(req.user._id)
+
+  res.send( _.pick(vendor, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email']))
 }
 
 

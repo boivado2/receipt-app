@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import  Joi from 'joi';
 import { Vendor } from '../model/vendor';
 import bcrypt from 'bcrypt'
-import jsonwebtoken  from 'jsonwebtoken'
 const router = express.Router()
 
 interface ILogin {
@@ -24,7 +23,7 @@ router.post('/', async(req: Request, res: Response) => {
   if (!validPassword) return res.status(400).json({ error: "Invalid email or password" })
   
   
-  const token = jsonwebtoken.sign({ email: vendor.email, _id: vendor._id }, process.env.jsonWebToken!)
+  const token = vendor.generateToken(vendor)
 
   res.json({token})
  

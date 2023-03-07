@@ -1,5 +1,4 @@
 import 'express-async-errors'
-// import joiObjectId from 'joi-objectid'
 import express from 'express'
 import vendors from './routes/vendors'
 import products from './routes/products'
@@ -8,11 +7,12 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import db from './starter/db'
 import errorHandler from './middleware/error'
-dotenv.config()
+import winston from './starter/logger';
+dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 
 const app = express()
-db(process.env.MONGODB_URI_DEV!)
+db(process.env.MONGODB_URI!)
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.json());
@@ -27,4 +27,6 @@ app.get("/", (req, res) => {
 })
 
 const PORT = process.env.PORT || 9000
-app.listen(PORT, () => console.log(`app running on ${PORT}`))
+const server = app.listen(PORT, () => winston.info(`app running on ${PORT}`))
+
+export default server
