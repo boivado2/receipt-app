@@ -31,7 +31,7 @@ export interface IProduct {
   price: number
   imageUrl?: string
   imageName: string
-  categories: Types.Array<string>
+  categories: string []
   vendorId: Types.ObjectId
 }
 

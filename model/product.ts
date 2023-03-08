@@ -12,7 +12,7 @@ const productSchema = new Schema<IProduct>({
   imageUrl: { type: String },
   categories: [{ type: String, min: 3, max: 225, required: true }],
   vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor" },
-  imageName: { type: String, required:true, unique: true },
+  imageName: { type: String, required:true },
 
 }, { timestamps: true, })
 

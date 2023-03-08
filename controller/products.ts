@@ -3,22 +3,24 @@ import { IProduct } from "../interfaces"
 import {Product, validateProduct} from '../model/product'
 import generateImageName from "../util/generateImageName"
 import { postImageToS3, deleteImageFromS3 } from "../util/s3"
-
+import validateRequestFileObject from '../util/validateRequestFileObject';
 
   const awsCloudFrontUrl = process.env.AWS_CLOUDFRONT_URL!
 
 
 const addProduct = async(req: Request, res: Response) => { 
 
-  const imageName = generateImageName()
+  const imageName = generateImageName() + '/' + req.file?.originalname
 
   const body = req.body as IProduct
       
-    const { error } = validateProduct({...body, imageName})
-    
-    if (error) return res.status(400).json({ error: error.message })
-    
+  const { error } = validateProduct({...body, imageName})
+  if (error) return res.status(400).json({ error: error.message })
 
+  const {error: fileError}  = validateRequestFileObject(req.file!)
+  if (fileError) return res.status(400).json({ error: fileError })
+
+    
    await postImageToS3(req.file, imageName)
     
     const product = new Product<IProduct>({
@@ -85,8 +87,11 @@ const updateProduct = async (req: Request, res: Response) => {
   
   // check to see if vendor as permission to update product
 
-  const product = await Product.findByIdAndUpdate(productId, { $set: body }, { new: true })
+  let product = await Product.findById(productId)
+  if(!product) return res.status(404).json({msg : "Product not found."})
 
+
+  product = await Product.findOneAndUpdate({vendorId: req.user._id}, { $set: body }, { new: true })
   if (!product) return res.status(404).json({ msg: "Product not found" })
 
   res.status(200).send(product)
@@ -104,7 +109,7 @@ const deleteProduct = async (req: Request, res: Response) => {
   
   // delete product if vendor have access
   product = await Product.findOneAndDelete({ vendorId: req.user._id })
-  if (!product) return res.status(401).json({ msg: "Access denied" })
+  if (!product) return res.status(404).json({ msg: "Access denied" })
 
   await deleteImageFromS3(product.imageName)
   

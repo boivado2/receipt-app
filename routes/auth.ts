@@ -23,7 +23,7 @@ router.post('/', async(req: Request, res: Response) => {
   if (!validPassword) return res.status(400).json({ error: "Invalid email or password" })
   
   
-  const token = vendor.generateToken(vendor)
+  const token = vendor.generateAuthToken()
 
   res.json({token})
  

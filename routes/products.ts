@@ -3,13 +3,14 @@ import productsController from  "../controller/products"
 import multer from 'multer'
 import auth from '../middleware/auth'
 import validateObjectId from '../middleware/validateObjectId'
+import validateRequestFileObject from './../middleware/validateRequestFIleObject';
 const router = express.Router()
 
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
 // POST: add product
-router.post('/', [auth, upload.single('imageUrl')], productsController.addProduct)
+router.post('/', [auth, upload.single('image')], productsController.addProduct)
 
 // Get: all products for a vendor
 /* params 
@@ -25,7 +26,7 @@ router.get('/', [auth], productsController.getVendorProducts)
 /* params 
   - id
 */
-router.get('/:id', [validateObjectId], productsController.getProduct)
+router.get('/:id', [auth, validateObjectId], productsController.getProduct)
 
 //PUT: update product
 /* params 

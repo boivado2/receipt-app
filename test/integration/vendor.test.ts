@@ -5,9 +5,8 @@ import { Vendor } from '../../model/vendor';
 
 describe('/Vendor', () => {
 
-  beforeAll(() => {})
 
-  afterAll(async() => {
+  afterEach(async() => {
     await Vendor.deleteMany()
     await server.close()
   })

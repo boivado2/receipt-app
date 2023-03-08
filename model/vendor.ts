@@ -1,4 +1,4 @@
-import mongoose, {  Model, Schema } from 'mongoose'
+import mongoose, {  Model, Schema, Types } from 'mongoose'
 import { IVendor } from '../interfaces/index'
 import Joi from 'joi'
 import bcrypt from 'bcrypt'
@@ -8,7 +8,7 @@ import jsonwebtoken  from 'jsonwebtoken'
 
 interface IVendorMethods {
   hashPassword(data: string): Promise<string>
-  generateToken (data: IVendor) : string
+  generateAuthToken () : string
 }
 
 type VendorModel = Model<IVendor, {}, IVendorMethods>
@@ -31,8 +31,9 @@ vendorSchema.methods.hashPassword = async(data) => {
   return await bcrypt.hash(data, salt)
 }
 
-vendorSchema.methods.generateToken = (payload) => {
-  return jsonwebtoken.sign({ email: payload.email, _id: payload._id }, process.env.jsonWebToken!)
+vendorSchema.methods.generateAuthToken = function () {
+
+  return jsonwebtoken.sign({ email: this.email, _id: this._id }, process.env.jsonWebToken!)
 }
 
 const Vendor = mongoose.model<IVendor, VendorModel>("Vendor", vendorSchema)
