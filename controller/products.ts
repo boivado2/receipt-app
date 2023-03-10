@@ -10,11 +10,11 @@ import validateRequestFileObject from '../util/validateRequestFileObject';
 
 const addProduct = async(req: Request, res: Response) => { 
 
-  const imageName = generateImageName() + '/' + req.file?.originalname
+  const imageName = generateImageName() + req.file?.originalname
 
   const body = req.body as IProduct
       
-  const { error } = validateProduct({...body, imageName})
+  const { error } = validateProduct({...body, imageName, vendorId: req.user._id})
   if (error) return res.status(400).json({ error: error.message })
 
   const {error: fileError}  = validateRequestFileObject(req.file!)
@@ -27,7 +27,7 @@ const addProduct = async(req: Request, res: Response) => {
       productName: body.productName,
       description: body.description,
       price: body.price,
-      vendorId: body.vendorId,
+      vendorId: req.user._id,
       imageName: imageName,
       categories: body.categories,
     })
@@ -82,17 +82,36 @@ const getProduct = async (req: Request, res: Response) => {
 
 const updateProduct = async (req: Request, res: Response) => {
 
-  const body = req.body as IProduct
+  let body = req.body as IProduct
   const {id: productId} = req.params
-  
-  // check to see if vendor as permission to update product
+  let imageName : string
+
 
   let product = await Product.findById(productId)
-  if(!product) return res.status(404).json({msg : "Product not found."})
-
-
-  product = await Product.findOneAndUpdate({vendorId: req.user._id}, { $set: body }, { new: true })
   if (!product) return res.status(404).json({ msg: "Product not found" })
+
+
+  imageName  = req.file ?  generateImageName() + req.file.originalname : product.imageName
+
+
+  const { error } = validateProduct({...body, imageName, vendorId: req.user._id})
+  if (error) return res.status(400).json({ error: error.message })
+
+  const {error: fileError}  = validateRequestFileObject(req.file)
+  if (fileError) return res.status(400).json({ error: fileError })
+
+
+  const userPermitted = product.vendorId.toString() === req.user._id
+  if(!userPermitted) return res.status(401).json({error: "unauthorized"})
+
+
+
+   req.file && await deleteImageFromS3(product.imageName)
+  
+  await postImageToS3(req.file, imageName )
+
+  product = await Product.findByIdAndUpdate(productId, { $set: {...body, imageName, vendorId: req.user._id} }, { new: true })
+  
 
   res.status(200).send(product)
   
@@ -108,8 +127,8 @@ const deleteProduct = async (req: Request, res: Response) => {
   if (!product) return res.status(404).json({ msg: "Product not found" })
   
   // delete product if vendor have access
-  product = await Product.findOneAndDelete({ vendorId: req.user._id })
-  if (!product) return res.status(404).json({ msg: "Access denied" })
+  const userPermitted = product.vendorId.toString() === req.user._id
+  if(!userPermitted) return res.status(401).json({error: "unauthorized"})
 
   await deleteImageFromS3(product.imageName)
   

@@ -9,11 +9,15 @@ type FileObject = {
   size: number
 }
 
-function validateRequestFileObject ( data: FileObject )  {
+function validateRequestFileObject ( data: FileObject | undefined )  {
 
   const array_of_allowed_files = ['image/png', 'image/jpeg', 'image/jpg']
   const allowed_file_size = 2;
   let error: string | undefined
+
+  if(!data) {
+   return { error} 
+  }
 
   if (!array_of_allowed_files.includes(data.mimetype!)) {
     error = 'file type not allowed'

@@ -9,7 +9,7 @@ const upload = multer({ storage: storage })
 
 router.post('/', upload.single('logoName'), vendorController.addVendor)
 
-router.put('/:id', [ upload.single('logoName')], vendorController.updateVendor)
+router.put('/:id', [ auth, upload.single('logoName')], vendorController.updateVendor)
 
 
 router.get('/', [auth], vendorController.getVendor)

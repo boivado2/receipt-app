@@ -3,7 +3,6 @@ import productsController from  "../controller/products"
 import multer from 'multer'
 import auth from '../middleware/auth'
 import validateObjectId from '../middleware/validateObjectId'
-import validateRequestFileObject from './../middleware/validateRequestFIleObject';
 const router = express.Router()
 
 const storage = multer.memoryStorage()
@@ -32,7 +31,7 @@ router.get('/:id', [auth, validateObjectId], productsController.getProduct)
 /* params 
   - id
 */
-router.put("/:id", [auth, validateObjectId], productsController.updateProduct)
+router.put("/:id", [auth, upload.single('image'), validateObjectId], productsController.updateProduct)
 
 // DELETE: delete product
 /* params 
