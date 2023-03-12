@@ -1,17 +1,12 @@
+import 'express-async-errors'
 import winston from 'winston'
 
 
-export default winston.createLogger({
-    format: winston.format.json(),
+export default () => {
+  winston.add(new winston.transports.File({filename: "file.log"}))
 
-    transports: [
-      new winston.transports.File({ filename: "file.log" })
-    ],
-    exceptionHandlers: [
-      new winston.transports.File({ filename: 'exceptions.log' })
-    ],
+  winston.add(new winston.transports.File({filename: "rejections.log", handleRejections: true,level: "error", format: winston.format.combine(winston.format.simple(), winston.format.json()) }))
 
-    rejectionHandlers: [
-      new winston.transports.File({ filename: 'rejections.log' })
-    ]
-})
+  winston.add(new winston.transports.File({filename: "exceptions.log", handleExceptions: true, level: "error", format: winston.format.combine(winston.format.simple(), winston.format.json())}))
+
+}

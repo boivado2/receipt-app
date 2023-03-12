@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import winston from './logger';
+import winston from 'winston';
 
 export default async function (uri: string) {
  
