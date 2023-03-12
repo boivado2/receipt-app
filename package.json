@@ -4,8 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.ts",
-    "test": "jest --watchAll --coverage"
+    "build": "tsc",
+    "dev": "nodemon index.ts",
+    "start": "node ./build/index.js",
+    "test": "jest --watchAll"
+  },
+  "engines": {
+    "node": "16.13.2"
   },
   "keywords": [],
   "author": "",
@@ -18,9 +23,11 @@
     "aws-sdk": "^2.1324.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-errors": "^3.1.1",
+    "helmet": "^6.0.1",
     "joi": "^17.8.3",
     "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^9.0.0",

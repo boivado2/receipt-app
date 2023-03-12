@@ -7,9 +7,9 @@ const router = express.Router()
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-router.post('/', upload.single('logoName'), vendorController.addVendor)
+router.post('/', upload.single('logo'), vendorController.addVendor)
 
-router.put('/:id', [ auth, upload.single('logoName')], vendorController.updateVendor)
+router.put('/:id', [ auth, upload.single('logo')], vendorController.updateVendor)
 
 
 router.get('/', [auth], vendorController.getVendor)

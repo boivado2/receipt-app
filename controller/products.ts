@@ -126,11 +126,13 @@ const deleteProduct = async (req: Request, res: Response) => {
   let product = await Product.findById(productId)
   if (!product) return res.status(404).json({ msg: "Product not found" })
   
-  // delete product if vendor have access
+  // check if vendor is authorize to delete product
   const userPermitted = product.vendorId.toString() === req.user._id
   if(!userPermitted) return res.status(401).json({error: "unauthorized"})
 
   await deleteImageFromS3(product.imageName)
+
+ product.delete()
   
   res.status(200).json({msg: "Product deleted successfully."})
 }

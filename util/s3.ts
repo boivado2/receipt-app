@@ -2,7 +2,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client
 import sharp from 'sharp'
 import dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({path: `.env.${process.env.NODE_ENV}`})
 
 const accessKeyId = process.env.AWS_ACCESS_KEY!
 const secretAccessKey = process.env.AWS_SECRETE_KEY!

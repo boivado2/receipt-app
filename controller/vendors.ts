@@ -19,6 +19,7 @@ const addVendor = async (req: Request, res: Response) => {
   const { error } = validateVendor({...body, logoName})
   if (error) return res.status(400).json({ error: error.message })
 
+
   const {error: fileError} = validateRequestFileObject(req.file!)
   if(fileError) return res.status(400).json({error: fileError})
 
@@ -30,9 +31,10 @@ const addVendor = async (req: Request, res: Response) => {
 
   vendor.password =  await vendor.hashPassword(vendor.password)
 
+  await postImageToS3(req.file, logoName)
+
   await vendor.save()
 
-  await postImageToS3(req.file, logoName)
   
   const token  = vendor.generateAuthToken()
 
@@ -79,10 +81,6 @@ const updateVendor = async (req: Request, res: Response) => {
 
 
   res.status(200).send(_.pick(vendor, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email']))
-
-  
-
-  
 
 }
 

@@ -1,3 +1,4 @@
+import { TokenProviderChain } from 'aws-sdk';
 import { string } from 'joi';
 import { Document, Schema, Types } from 'mongoose';
 import request from 'supertest'
@@ -141,7 +142,7 @@ describe('/Products', () => {
       expect(res.status).toBe(401)
     })
 
-    it('should return 404 if  invalid jwt token is  provided', async () => {
+    it('should return 400 if  invalid jwt token is  provided', async () => {
       token = "token"
       const res = await exec()
       expect(res.status).toBe(400)
@@ -164,12 +165,12 @@ describe('/Products', () => {
 
     it('should save the product if it is valid ', async () => {
       const res = await exec(testImage1)
-     product =  await Product.find({_id : res.body._id})
+     product =  await Product.find({price : body.price})
       expect(res.status).toBe(201)
       expect(product).not.toBeNull()
     })
 
-    it('should return 404 if image is not valid ', async () => {
+    it('should return 400 if image is not valid ', async () => {
       const res = await exec(testImage2)
       expect(res.status).toBe(400)
     })
@@ -181,6 +182,126 @@ describe('/Products', () => {
       
       expect(res.status).toBe(201)
       expect(res.body).toHaveProperty("price")
+    })
+
+
+  })
+
+
+  describe("/PUT: ID", () => {
+
+
+    let token : string
+    let vendor 
+    let product
+    let vendorId : Types.ObjectId
+    let updatedBody : IProduct
+    let id : Types.ObjectId | string
+
+    beforeEach(async () => {
+
+      vendor = new Vendor()
+      vendorId = vendor._id
+      token = vendor.generateAuthToken()
+
+     product =  new Product({
+        productName: "Mac-book lite 2",
+        description: "branded with m2 chip 2tb and 64gb ram. fast as light",
+        price: 1500,
+        vendorId: vendorId,
+        imageName: "pro3.jpeg",
+        categories: ["tech", "laptops"],
+      })
+
+      await product.save()
+
+      id = product._id
+ 
+
+      updatedBody = {
+        productName: "Mac-book lite 3",
+        description: "branded with m2 chip 2tb and 64gb ram. fast as light",
+        price: 1600,
+        vendorId: vendorId,
+        imageName: "pro3.jpeg",
+        categories: ["tech", "laptops"],
+      }
+
+    })
+
+    const exec = async (image? : string) => await request(server)
+    .put(url + id)
+    .set("x-auth-token", token)
+    .field('productName', updatedBody.productName)
+    .field('description', updatedBody.description)
+    .field('categories', updatedBody.categories)
+    .field('price', updatedBody.price)
+    .attach('image', image!)
+
+    it('should return 401 if  jwt token is not provided', async () => {
+      token = ""
+      const res = await exec()
+      expect(res.status).toBe(401)
+    })
+
+    it('should return 400 if  invalid jwt token is  provided', async () => {
+      token = "token"
+      const res = await exec()
+      expect(res.status).toBe(400)
+    })  
+    
+    it('should return 400 if  product name is empty ', async () => {
+      updatedBody.productName = ""
+      const res = await exec()
+      
+      expect(res.status).toBe(400)
+    })
+
+    it('should return 400 if  price is less than 0 ', async () => {
+      updatedBody.price = -12
+      const res = await exec()
+      
+      expect(res.status).toBe(400)
+    })
+
+    test('should return 404 if no product with the given id exist', async() => { 
+      id = new Types.ObjectId()
+
+      const res = await exec()
+      expect(res.status).toBe(404);
+     })
+
+    test('should return 404 if invalid id is passed', async() => { 
+      id = "token"
+
+      const res = await exec()
+      expect(res.status).toBe(404);
+     })   
+
+
+
+     it('should return 400 if image is not valid ', async () => {
+      const res = await exec(testImage2)
+      expect(res.status).toBe(400)
+    })
+
+
+    test('should return 401 if vendorId  match the vendorId reference on product', async() => {
+
+
+      token = new Vendor().generateAuthToken()
+      const res = await exec()
+      expect(res.status).toBe(401);
+
+     })
+
+
+     it('should return the updated product if it is valid ', async () => {
+
+      const res = await exec(testImage1)
+    
+      expect(res.status).toBe(200)
+      expect(res.body.price).toBe(updatedBody.price)
     })
 
 
@@ -315,7 +436,7 @@ describe('/Products', () => {
 
 
 
-     test('should return 404 if vendorId those match the vendorId reference on product', async() => { 
+     test('should return 401 if vendorId those match the vendorId reference on product', async() => { 
 
       vendorId = new Types.ObjectId()
 
@@ -335,7 +456,7 @@ describe('/Products', () => {
       productId  = product._id
 
       const res = await exec(productId.toString())
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(401);
 
      })
 

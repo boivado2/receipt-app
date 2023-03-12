@@ -9,7 +9,7 @@ export interface IVendor  {
   email: string
   phone: string
   logoName: string
-  logoUrl: string
+  logoUrl?: string
   password: string
 }
 
