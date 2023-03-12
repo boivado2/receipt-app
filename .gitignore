@@ -9,3 +9,4 @@ jest.config.js
 file.log
 exceptions.log
 rejections.log
+/build
