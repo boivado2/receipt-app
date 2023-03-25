@@ -90,7 +90,7 @@ const getVendor =async (req: Request, res: Response) => {
 
   vendor.logoUrl = awsCloudFrontUrl + vendor.logoName
 
-  res.send( _.pick(vendor, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email']))
+  res.send( _.pick(vendor, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email', 'createdAt', "updatedAt"]))
 }
 
 
