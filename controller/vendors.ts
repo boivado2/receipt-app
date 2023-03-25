@@ -12,7 +12,9 @@ const awsCloudFrontUrl = process.env.AWS_CLOUDFRONT_URL!
 
 
 const addVendor = async (req: Request, res: Response) => {
-  const logoName = generateImageName() + req.file?.originalname
+  
+  if(!req.file) return res.status(400).json({error: "logo is required"})
+  const logoName = generateImageName() + req.file.originalname
 
   const body = req.body as IVendor
 

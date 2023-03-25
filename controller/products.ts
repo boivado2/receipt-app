@@ -10,7 +10,8 @@ import validateRequestFileObject from '../util/validateRequestFileObject';
 
 const addProduct = async(req: Request, res: Response) => { 
 
-  const imageName = generateImageName() + req.file?.originalname
+  if(!req.file) return res.status(400).json({error: "image is required"})
+  const imageName = generateImageName() + req.file.originalname
 
   const body = req.body as IProduct
       
