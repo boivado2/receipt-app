@@ -27,7 +27,7 @@ type PutCommand = {
 export const postImageToS3 = async (data: any, imageName: string) => {
   try {
   
-  const buffer = await sharp(data.buffer).resize(1280, 854, {fit: 'cover'}).toBuffer()
+  const buffer = await sharp(data.buffer).resize(1280, 1280, {fit: 'cover'}).toBuffer()
 
   const putCommand : PutCommand = {
     Bucket,
