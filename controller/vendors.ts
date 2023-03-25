@@ -26,6 +26,9 @@ const addVendor = async (req: Request, res: Response) => {
   if(fileError) return res.status(400).json({error: fileError})
 
   let vendor = await Vendor.findOne({ email: body.email })
+  if(vendor) return res.status(400).json({error: "Vendor already exist"}) 
+
+  vendor = await Vendor.findOne({  phone: body.phone })
   if(vendor) return res.status(400).json({error: "Vendor already exist"})
 
   

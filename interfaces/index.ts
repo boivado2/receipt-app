@@ -5,7 +5,7 @@ export interface IVendor  {
   businessName:		string
   ownerName: string
   companyType: string
-  address: string
+  address: Address,
   email: string
   phone: string
   logoName: string
