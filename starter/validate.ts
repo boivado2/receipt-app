@@ -1,4 +1,4 @@
-import joi, {Root} from "joi"
+import joi from "joi"
 
 declare module "joi/lib" {
 	export interface Root {

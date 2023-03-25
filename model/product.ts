@@ -41,5 +41,6 @@ const validateProduct = (data: IProduct) => {
 
 export {
   Product,
-  validateProduct
+  validateProduct,
+  productSchema
 }

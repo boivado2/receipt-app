@@ -18,10 +18,15 @@ type Address = {
   city: string
   state: string
 }
-interface ICustomer {
+export interface ICustomer {
   name: string
   phone: string
   address: Address
+  email : string
+}
+
+interface IVendorInfo  extends ICustomer {
+  branchNO?: string | number
 }
 
 export interface IProduct {
@@ -35,25 +40,14 @@ export interface IProduct {
   vendorId: Types.ObjectId
 }
 
-interface Invoice {
 
-  // receiptId: string
+export interface IReceipt {
+  _id?: Types.ObjectId
   receiptNumber: string
-  dateCreated: Date
-  dateUpdated: Date
   className: string
-  logoUrl: string
-
-  vendor: {
-
-    name: string
-    phone: string
-    email: string
-    address: string
-    branchNO: string
-  }
-
-  customerInfo : ICustomer
+  narration: string
+  vendor: IVendorInfo | Types.ObjectId
+  customer : ICustomer
+  items : IProduct [] | Types.ObjectId []
   totalPrice: number
-  totalQuantity: number
 }

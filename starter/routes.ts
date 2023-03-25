@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import vendors from '../routes/vendors'
 import products from '../routes/products'
+import receipts from '../routes/receipts'
 import auth from '../routes/auth'
 import errorHandler from '../middleware/error'
 
@@ -14,6 +15,7 @@ export default (app: Express) => {
   app.use('/api/login',auth )
   app.use('/api/vendors', vendors)
   app.use('/api/products', products)
+  app.use('/api/receipts', receipts)
 
   app.get("/", (req, res) => {
     res.send("I love programming..")

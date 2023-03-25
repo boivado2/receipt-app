@@ -61,5 +61,6 @@ const validateVendor = (data: IVendor) => {
 
 export {
   Vendor,
-  validateVendor
+  validateVendor,
+  vendorSchema
 }
