@@ -1,6 +1,4 @@
-import { TokenProviderChain } from 'aws-sdk';
-import { string } from 'joi';
-import { Document, Schema, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import request from 'supertest'
 import server from '../../index';
 import { IProduct } from '../../interfaces';
@@ -12,16 +10,15 @@ const testImage2 = `${__dirname}/../../assets/alt-testpng.gif`
 
 
 
-console.log(testImage1)
-
 describe('/Products', () => {
 
   let url = '/api/products/'
 
 
+
   afterEach(async() => {
-    await Product.deleteMany()
     await server.close()
+    await Product.deleteMany({})
   })
 
 

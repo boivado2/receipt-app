@@ -10,8 +10,8 @@ describe('/Vendor', () => {
   const url = '/api/vendors'
 
   afterEach(async() => {
-    await Vendor.deleteMany()
     await server.close()
+    await Vendor.deleteMany({})
   })
 
 
@@ -25,7 +25,7 @@ describe('/Vendor', () => {
         ownerName: "testing name",
         email: "testing@gmail.com",
         companyType: "testing company",
-        address: "testing address",
+        address: {city: "yenagoa", street: "kphansia", state: "bayelsa"},
         phone: "090988989",
         logoName: "image.jpeg",
         password: "password"
@@ -41,7 +41,9 @@ describe('/Vendor', () => {
       .field("password", body.password)
       .field("email", body.email)
       .field("phone", body.phone)
-      .field("address", body.address)
+      .field("address[street]", body.address.street)
+      .field("address[city]", body.address.city)
+      .field("address[state]", body.address.state)
       .attach("logo", logo! )
 
 
@@ -72,7 +74,7 @@ describe('/Vendor', () => {
           ownerName: "testing name",
           email: "testing@gmail.com",
           companyType: "testing company",
-          address: "testing address",
+          address: {city: "yenagoa", street: "kphansia", state: "bayelsa"},
           phone: "090988989",
           logoName: "image.jpeg",
           password: "password"
@@ -119,6 +121,7 @@ describe('/Vendor', () => {
     it("should have auth custom header", async () => {
       const res = await exec(testImage1)
 
+
       expect(res.header).toHaveProperty("x-auth-token")
       expect(res.headers['x-auth-token']).not.toBeFalsy()
 
@@ -134,7 +137,7 @@ describe('/Vendor', () => {
         ownerName: "testing name",
         email: "testing@gmail.com",
         companyType: "testing company",
-        address: "testing address",
+        address: {city: "yenagoa", street: "kphansia", state: "bayelsa"},
         phone: "090988989",
         logoName: "image.jpeg",
         password: "password"
