@@ -12,7 +12,9 @@ const awsCloudFrontUrl = process.env.AWS_CLOUDFRONT_URL!
 
 
 const addVendor = async (req: Request, res: Response) => {
-  const logoName = generateImageName() + req.file?.originalname
+  
+  if(!req.file) return res.status(400).json({error: "logo is required"})
+  const logoName = generateImageName() + req.file.originalname
 
   const body = req.body as IVendor
 
@@ -24,6 +26,9 @@ const addVendor = async (req: Request, res: Response) => {
   if(fileError) return res.status(400).json({error: fileError})
 
   let vendor = await Vendor.findOne({ email: body.email })
+  if(vendor) return res.status(400).json({error: "Vendor already exist"}) 
+
+  vendor = await Vendor.findOne({  phone: body.phone })
   if(vendor) return res.status(400).json({error: "Vendor already exist"})
 
   
@@ -90,7 +95,7 @@ const getVendor =async (req: Request, res: Response) => {
 
   vendor.logoUrl = awsCloudFrontUrl + vendor.logoName
 
-  res.send( _.pick(vendor, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email']))
+  res.send( _.pick(vendor, ['businessName', "_id", 'companyType', 'address', 'logoUrl', 'logoName', 'ownerName', 'phone', 'email', 'createdAt', "updatedAt"]))
 }
 
 

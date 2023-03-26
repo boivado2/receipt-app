@@ -16,7 +16,11 @@ type VendorModel = Model<IVendor, {}, IVendorMethods>
 const vendorSchema = new Schema<IVendor, VendorModel, IVendorMethods>({
   businessName: { type: String,  max: 225, required: true },
   companyType: { type: String, min: 4, max: 225, required: true },
-  address: { type: String, min: 4, max: 225, required: true },
+  address: { 
+    street: {  type: String, required: true}, 
+    city: { type: String, required: true}, 
+    state: { type: String, required: true}     
+  },
   ownerName: { type: String, min: 4, max: 50, required: true },
   email: { type: String, min: 4, max: 225, required: true, unique: true },
   phone: { type: String, required: true, unique: true },
@@ -44,7 +48,11 @@ const Vendor = mongoose.model<IVendor, VendorModel>("Vendor", vendorSchema)
 const validateVendor = (data: IVendor) => {
   
   const schema = Joi.object<IVendor>({
-    address: Joi.string().max(225).required(),  
+    address: Joi.object({
+      street:  Joi.string().max(225).required(),
+      city:  Joi.string().max(225).required(),
+      state:  Joi.string().max(225).required(),
+    }),
     ownerName: Joi.string().max(50).required(),
     businessName : Joi.string().max(225).required(),
     companyType : Joi.string().max(225).required(),
