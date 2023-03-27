@@ -40,6 +40,12 @@ export interface IProduct {
   vendorId: Types.ObjectId
 }
 
+export interface IReceiptProduct extends IProduct {
+  qty: number
+  productId?: string
+}
+
+
 
 export interface IReceipt {
   _id?: Types.ObjectId
@@ -48,6 +54,6 @@ export interface IReceipt {
   narration: string
   vendor: IVendorInfo | Types.ObjectId
   customer : ICustomer
-  items : IProduct [] | Types.ObjectId []
+  items : IReceiptProduct [] 
   totalPrice: number
 }

@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { Product } from "../model/product";
 import { Receipt, validateReceipt } from "../model/receipts";
 import { Vendor } from "../model/vendor";
-import { IReceipt } from './../interfaces/index';
+import {  IReceipt } from './../interfaces/index';
 
 
 const getReceipts = async(req:Request, res:Response) => {
@@ -23,22 +23,44 @@ const addReceipt = async(req: Request, res:Response) => {
  const vendor = await Vendor.findById(body.vendor)
  if(!vendor) return res.status(404).json({error: "vendor not found"})
 
+
  const products = await Promise.all(body.items.map(async(item) => {
-  return await Product.findById(item)
+
+  const product =  await Product.findById(item.productId)
+  if(!product) {
+    return null
+  }
+
+
+  if(item.productId === product._id.toString()){
+    return {
+      categories: product?.categories!, 
+      description: product?.description!, 
+      imageName: product?.imageName!, 
+      imageUrl: product?.imageUrl!,
+      price: product?.price!, 
+      productName: product?.productName!, 
+      vendorId: product?.vendorId!, 
+      qty: item.qty 
+    }
+  }
+
+  
  }))
+
 
  if(products.includes(null)) return res.status(404).json({error: "product not found"})
 
 
- const receipt = new Receipt({
-  className: body.className,
-  customer: body.customer,
-  items: products,
-  vendor: vendor,
-  receiptNumber: body.receiptNumber,
-  narration: body.narration,
-  totalPrice: body.totalPrice
- })
+  const receipt = new Receipt({
+    className: body.className,
+    customer: body.customer,
+    items: products,
+    vendor: vendor,
+    receiptNumber: body.receiptNumber,
+    narration: body.narration,
+    totalPrice: body.totalPrice
+  })
 
 
  await receipt.save()

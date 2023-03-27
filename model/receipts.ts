@@ -1,5 +1,5 @@
 import mongoose, {  Schema } from 'mongoose'
-import { IReceipt } from '../interfaces/index'
+import { IReceipt, IReceiptProduct } from '../interfaces/index'
 import Joi from 'joi'
 import { productSchema } from './product'
 
@@ -19,7 +19,22 @@ const receiptSchema = new Schema<IReceipt>({
         state: { type: String, required: true, min: 3, max: 50}
     },
   },
-  items: [ { type: productSchema , required: true} ],
+  items: [ 
+    { 
+      type: new Schema<IReceiptProduct>({
+        productName: { type: String, max: 225, required: true },
+        description: { type: String, min: 4, max: 225, required: true },
+        price: { type: Number, minlength: 0, required: true },
+        imageUrl: { type: String },
+        categories: [{ type: String, min: 3, max: 225, required: true }],
+        vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor" },
+        imageName: { type: String, required:true },
+        qty: {type: Number, minlength:1}
+
+      }), 
+      required: true
+    }
+   ],
   vendor: { type: new Schema({
     address: {
       city:{ type: String, required: true, min: 3, max: 50},
@@ -50,7 +65,9 @@ const validateReceipt = (data: IReceipt) => {
     className: Joi.string().max(50).required(),  
     narration: Joi.string().max(225).required(),
     items : Joi.array().items(
-      Joi.string().regex(/^[0-9a-fA-F]{24}$/, {name: "Object id"}).message("invalid id")
+      Joi.object<IReceiptProduct>({productId: Joi.string().regex(/^[0-9a-fA-F]{24}$/, {name: "Object id"}).message("invalid id"),
+       qty:Joi.number().required() 
+      })
     ).required(),
     vendor: Joi.string().regex(/^[0-9a-fA-F]{24}$/, {name: "object id"}).message("invalid id") ,
     receiptNumber : Joi.number().min(0).required(),
