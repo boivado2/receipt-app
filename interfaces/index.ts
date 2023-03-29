@@ -25,8 +25,8 @@ export interface ICustomer {
   email : string
 }
 
-interface IVendorInfo  extends ICustomer {
-  branchNO?: string | number
+export interface IVendorInfo  extends ICustomer {
+  branchNO?: string | number,
 }
 
 export interface IProduct {
@@ -52,7 +52,8 @@ export interface IReceipt {
   receiptNumber: string
   className: string
   narration: string
-  vendor: IVendorInfo | Types.ObjectId
+  vendor: IVendorInfo
+  vendorId?: Types.ObjectId
   customer : ICustomer
   items : IReceiptProduct [] 
   totalPrice: number
