@@ -12,7 +12,7 @@ export default (app: Express) => {
   app.use(cors())
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(express.json());
-  app.use('/api/login',auth )
+  app.use('/api/auth',auth )
   app.use('/api/vendors', vendors)
   app.use('/api/products', products)
   app.use('/api/receipts', receipts)
