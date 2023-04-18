@@ -18,9 +18,9 @@ interface IResetPassword {
 type MyResponse<T> = { error: string } | { msg : string}  | T
 
 
-router.post('/login', async(req: Request, res: Response) => {
+router.post('/login', async(req: Request<{}, {}, {email: string, password: string}>, res: Response<MyResponse<{token: string}>>) => {
 
-  const body = req.body as ILogin
+  const body = req.body
   
   const { error } = validate(body)
   if (error) return res.status(400).json({ error: error.message })
@@ -31,8 +31,7 @@ router.post('/login', async(req: Request, res: Response) => {
   const validPassword = await bcrypt.compare(body.password, vendor.password)
   if (!validPassword) return res.status(400).json({ error: "Invalid email or password" })
   
-  
-  const token = vendor.generateAuthToken()
+  const token = await vendor.generateAuthToken()
 
   res.json({token})
  
