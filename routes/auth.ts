@@ -48,7 +48,7 @@ router.patch('/reset-password', auth, async(req : Request<{}, {}, IResetPassword
 
 
   let validPassword = await bcrypt.compare(req.body.currentPassword, vendor.password)
-  if (!validPassword) return res.status(400).json({ error: "Invalid email or password" })
+  if (!validPassword) return res.status(400).json({ error: "Invalid password" })
 
 
   validPassword = await bcrypt.compare(req.body.newPassword, vendor.password)
