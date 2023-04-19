@@ -9,7 +9,12 @@ import errorHandler from '../middleware/error'
 
 
 export default (app: Express) => {
-  app.use(cors())
+  const corsOptions ={
+    origin:'*', 
+    credentials:true,
+    optionSuccessStatus:200,
+ }
+  app.use(cors(corsOptions))
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(express.json());
   app.use('/api/auth',auth )
