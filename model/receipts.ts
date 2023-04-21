@@ -69,7 +69,8 @@ const validateReceipt = (data: IReceipt) => {
       })
     ).required(),
 
-    receiptNumber : Joi.number().min(0).required(),
+    
+    receiptNumber : Joi.string().min(0).required(),
 
     totalPrice: Joi.number().min(0),
 

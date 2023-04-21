@@ -72,6 +72,7 @@ const updateReceipt = async(req:Request<{id: string}, {}, IReceipt>, res:Respons
 
    if(products.includes(null)) return res.status(404).json({error: "product not found"})
 
+   body.vendorId
    receipt.set({ ...body, items: products})
 
   await receipt.save()
