@@ -106,6 +106,7 @@ const addReceipt = async(req: Request<{}, {}, IReceipt>, res:Response<MyResponse
 
   if(item.productId === product._id.toString()){
     return {
+      _id : product._id,
       categories: product?.categories, 
       description: product?.description, 
       imageName: product?.imageName, 
@@ -123,14 +124,20 @@ const addReceipt = async(req: Request<{}, {}, IReceipt>, res:Response<MyResponse
 
  if(products.includes(null)) return res.status(404).json({error: "product not found"})
 
-
   receipt = new Receipt({
     className: body.className,
     customer: body.customer,
     items: products,
-    vendor: vendor,
+    vendor: {
+      address: vendor.address,
+      email: vendor.email,
+      phone: vendor.phone,
+      name: vendor.businessName,
+      
+    },
     receiptNumber: body.receiptNumber,
     narration: body.narration,
+    dateIssued: body.dateIssued,
     totalPrice: body.totalPrice
   })
 

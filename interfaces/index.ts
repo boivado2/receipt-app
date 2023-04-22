@@ -57,4 +57,5 @@ export interface IReceipt {
   customer : ICustomer
   items : IReceiptProduct [] 
   totalPrice: number
+  dateIssued: Date
 }

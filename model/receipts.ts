@@ -7,7 +7,7 @@ import Joi from 'joi'
 const receiptSchema = new Schema<IReceipt>({
   className: { type: String, max: 225, required: true },
   narration: { type: String, min: 4, max: 225, required: true },
-  receiptNumber: { type: String || Number, required: true, unique: true },
+  receiptNumber: { type: String, required: true, unique: true },
   customer: {
     name: { type: String, required: true, min: 3, max: 50},
     email: { type: String, required: true},
@@ -46,6 +46,7 @@ const receiptSchema = new Schema<IReceipt>({
   }),
    required: true 
   },
+  dateIssued: {type:Date, required: true},
   totalPrice: {type: Number, required: true, min:0}
 
 }, { timestamps: true, })
@@ -68,12 +69,9 @@ const validateReceipt = (data: IReceipt) => {
        qty:Joi.number().required() 
       })
     ).required(),
-
-    
     receiptNumber : Joi.string().min(0).required(),
-
     totalPrice: Joi.number().min(0),
-
+    dateIssued: Joi.date().required(),
     customer :Joi.object<ICustomer>({
       name: Joi.string().required(),
       email: Joi.string().email().required(),
@@ -84,7 +82,6 @@ const validateReceipt = (data: IReceipt) => {
         state: Joi.string().required()
       })
     }).required(),
-
   })
 
   return schema.validate(data, {abortEarly: true})
